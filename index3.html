@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>fitcoach AI Dashboard</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#137fec",
+              "background-light": "#f6f7f8",
+              "background-dark": "#101922",
+            },
+            fontFamily: {
+              display: ["Inter"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+              lg: "1rem",
+              xl: "1.5rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display bg-background-light dark:bg-background-dark">
+<div class="relative flex min-h-screen w-full flex-col bg-background-light dark:bg-background-dark">
+<main class="flex-grow pb-32">
+<header class="flex items-center p-4">
+<div class="flex-1"></div>
+<h1 class="flex-1 text-center text-lg font-bold text-background-dark dark:text-background-light">
+            Dashboard
+          </h1>
+<div class="flex flex-1 items-center justify-end">
+<button class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-background-light text-background-dark/80 transition-colors hover:bg-primary/10 dark:bg-background-dark dark:text-background-light/80 dark:hover:bg-primary/20">
+<svg class="h-6 w-6" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2l.15.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+<circle cx="12" cy="12" r="3"></circle>
+</svg>
+</button>
+</div>
+</header>
+<div class="px-4">
+<h2 class="text-3xl font-bold text-background-dark dark:text-background-light">
+            Welcome back, Alex
+          </h2>
+</div>
+<section class="mt-6 grid grid-cols-2 gap-4 px-4">
+<div class="rounded-xl border border-primary/20 bg-primary/5 p-4 dark:border-primary/30 dark:bg-primary/10">
+<p class="text-sm font-medium text-background-dark/70 dark:text-background-light/70">
+              BMI
+            </p>
+<p class="mt-1 text-2xl font-bold text-background-dark dark:text-background-light">
+              22.5
+            </p>
+</div>
+<div class="rounded-xl border border-primary/20 bg-primary/5 p-4 dark:border-primary/30 dark:bg-primary/10">
+<p class="text-sm font-medium text-background-dark/70 dark:text-background-light/70">
+              Body Fat %
+            </p>
+<p class="mt-1 text-2xl font-bold text-background-dark dark:text-background-light">
+              15%
+            </p>
+</div>
+</section>
+<section class="mt-8 px-4">
+<h3 class="text-xl font-bold text-background-dark dark:text-background-light">
+            Progress
+          </h3>
+<div class="mt-4 rounded-xl border border-primary/20 bg-primary/5 p-4 dark:border-primary/30 dark:bg-primary/10">
+<div class="flex items-baseline justify-between">
+<div>
+<p class="text-sm font-medium text-background-dark/70 dark:text-background-light/70">
+                  Weight/Calories/Workouts
+                </p>
+<p class="text-xs text-background-dark/50 dark:text-background-light/50">
+                  Last 30 Days
+                </p>
+</div>
+<p class="text-lg font-bold text-green-500">+10%</p>
+</div>
+<div class="mt-4 h-36">
+<svg fill="none" height="100%" preserveAspectRatio="none" viewBox="0 0 472 150" width="100%" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25V149H0V109Z" fill="url(#paint0_linear_chart)"></path>
+<path d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25" stroke="var(--chart-line-color, #137fec)" stroke-linecap="round" stroke-width="3"></path>
+<defs>
+<linearGradient gradientUnits="userSpaceOnUse" id="paint0_linear_chart" x1="236" x2="236" y1="1" y2="149">
+<stop stop-color="var(--chart-line-color, #137fec)" stop-opacity="0.2"></stop>
+<stop offset="1" stop-color="var(--chart-line-color, #137fec)" stop-opacity="0"></stop>
+</linearGradient>
+</defs>
+</svg>
+</div>
+<div class="mt-2 flex justify-around">
+<p class="text-xs font-bold uppercase tracking-wider text-background-dark/40 dark:text-background-light/40">
+                W1
+              </p>
+<p class="text-xs font-bold uppercase tracking-wider text-background-dark/40 dark:text-background-light/40">
+                W2
+              </p>
+<p class="text-xs font-bold uppercase tracking-wider text-background-dark/40 dark:text-background-light/40">
+                W3
+              </p>
+<p class="text-xs font-bold uppercase tracking-wider text-background-dark/40 dark:text-background-light/40">
+                W4
+              </p>
+</div>
+</div>
+</section>
+<section class="mt-8 px-4">
+<h3 class="text-xl font-bold text-background-dark dark:text-background-light">
+            Your Starter Plan
+          </h3>
+<div class="mt-4 space-y-4">
+<div class="flex items-center gap-4 rounded-xl border border-primary/20 bg-primary/5 p-4 dark:border-primary/30 dark:bg-primary/10">
+<div class="flex-1">
+<p class="text-xs font-medium uppercase tracking-wider text-background-dark/50 dark:text-background-light/50">
+                  Workout
+                </p>
+<p class="text-base font-bold text-background-dark dark:text-background-light">
+                  Strength Training
+                </p>
+<p class="text-sm text-background-dark/70 dark:text-background-light/70">
+                  3 workouts this week
+                </p>
+</div>
+<div class="aspect-square h-20 w-20 flex-shrink-0 rounded-lg bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC6d150D2fxTdBGVZPVPphuNBx5M-IdeDWuuOmkxSrcYIt5yP8ZMGmCbhRf47TtkQ1-ZXE2XCiU9gUHO-_Q0_QSnxYFxXyENspYwkiS0wthQ-3ua-ghSyLAzQZN05zz1oACFCOE4P-MfsSgNp6DTtFjls6Q9K5gBJb7tcsYG-Cu38tx3mJiqHaVStNm1FNYPUMjHWQ58MLLtIBywFeP8cV3rdgsl0-a6XSp842BsN7B3rAhcs5-rM0RSXboJQxdz9IKWCOo3HHyjyrg");'></div>
+</div>
+<div class="flex items-center gap-4 rounded-xl border border-primary/20 bg-primary/5 p-4 dark:border-primary/30 dark:bg-primary/10">
+<div class="flex-1">
+<p class="text-xs font-medium uppercase tracking-wider text-background-dark/50 dark:text-background-light/50">
+                  Diet
+                </p>
+<p class="text-base font-bold text-background-dark dark:text-background-light">
+                  Balanced Diet
+                </p>
+<p class="text-sm text-background-dark/70 dark:text-background-light/70">
+                  1800 calories/day
+                </p>
+</div>
+<div class="aspect-square h-20 w-20 flex-shrink-0 rounded-lg bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBtH8j31oIUViG_5x9lqjPVgv-eOKFy2g0AUN7Bvv5VbNFYIwebeKHA0mEwmV5wt4w6_Q86bQ813rbYW_OzqheyY2YCbY-40n94DT7rfR86xG1XL6v1Akdm5Dl2_5Y4sGKgpkwoDCaC7qd_zUBj-iR6mXLiBYHNBpk6CXCeWHdbQyKuRD7Fk5HyYI1g4iJneW_hhQXOjTrKUvS_V0ke9VjBMTDsqkCdz1DOmxg60BHWDmNzAuPunOBV-ofxhITa9vVRslgc0lI6C_cU");'></div>
+</div>
+</div>
+</section>
+</main>
+<div class="pointer-events-none fixed inset-x-0 bottom-20 z-10 flex justify-end px-4">
+<button class="pointer-events-auto flex items-center gap-2 rounded-full bg-primary py-3 pl-4 pr-5 text-sm font-bold text-white shadow-lg transition-transform hover:scale-105">
+<svg class="h-5 w-5" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"></path>
+</svg>
+<span>Ask AI Trainer</span>
+</button>
+</div>
+<nav class="fixed inset-x-0 bottom-0 z-20 border-t border-primary/20 bg-background-light/80 backdrop-blur-lg dark:border-primary/30 dark:bg-background-dark/80">
+<div class="flex h-20 justify-around">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+<svg class="h-6 w-6" fill="currentColor" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="0" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+<polyline points="9 22 9 12 15 12 15 22"></polyline>
+</svg>
+<span class="text-xs font-semibold">Dashboard</span>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-background-dark/50 dark:text-background-light/50" href="#">
+<svg class="h-6 w-6" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"></path>
+</svg>
+<span class="text-xs font-semibold">Chat</span>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-background-dark/50 dark:text-background-light/50" href="#">
+<svg class="h-6 w-6" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M3 3v18h18"></path>
+<path d="M18.7 8a2.3 2.3 0 0 0-3.4 0l-4.6 4.6a2.3 2.3 0 0 0 0 3.4l2.3 2.3a2.3 2.3 0 0 0 3.4 0l4.6-4.6a2.3 2.3 0 0 0 0-3.4Z"></path>
+</svg>
+<span class="text-xs font-semibold">Progress</span>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-background-dark/50 dark:text-background-light/50" href="#">
+<svg class="h-6 w-6" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2l.15.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+<circle cx="12" cy="12" r="3"></circle>
+</svg>
+<span class="text-xs font-semibold">Settings</span>
+</a>
+</div>
+</nav>
+</div>
+
+</body></html>

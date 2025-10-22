@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>fitcoach AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="flex flex-col h-screen">
+<header class="flex items-center justify-between p-4">
+<h1 class="text-xl font-bold text-background-dark dark:text-background-light grow text-center">fitcoach AI</h1>
+<button class="text-background-dark/80 dark:text-background-light/80">
+<span class="material-symbols-outlined text-3xl">
+                    help_center
+                </span>
+</button>
+</header>
+<main class="flex-grow flex flex-col px-4 pt-4 pb-8">
+<div class="mb-6">
+<div class="flex justify-between items-center mb-2">
+<p class="text-sm font-medium text-background-dark/60 dark:text-background-light/60">Step 1/10</p>
+</div>
+<div class="w-full bg-background-dark/10 dark:bg-background-light/10 rounded-full h-2">
+<div class="bg-primary h-2 rounded-full" style="width: 10%"></div>
+</div>
+</div>
+<div class="flex-grow flex flex-col justify-center">
+<h2 class="text-3xl font-bold text-background-dark dark:text-background-light mb-6 text-center">What's your name?</h2>
+<div class="relative mb-6">
+<input class="w-full h-16 px-6 text-lg bg-background-light dark:bg-background-dark border-2 border-background-dark/10 dark:border-background-light/10 rounded-xl focus:ring-primary focus:border-primary text-background-dark dark:text-background-light placeholder-background-dark/40 dark:placeholder-background-light/40" placeholder="Enter your name" type="text"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-background-dark/60 dark:text-background-light/60">
+<span class="material-symbols-outlined text-3xl">
+                            mic
+                        </span>
+</button>
+</div>
+</div>
+<button class="w-full bg-primary text-white font-bold py-4 px-4 rounded-xl text-lg hover:bg-primary/90 transition-colors duration-300">
+                Continue
+            </button>
+</main>
+</div>
+
+</body></html>

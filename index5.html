@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter%3Awght%40400%3B500%3B700%3B900&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900" onload="this.rel='stylesheet'" rel="stylesheet"/>
+<title>Stitch Design</title>
+<link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#137fec",
+              "background-light": "#f6f7f8",
+              "background-dark": "#101922",
+            },
+            fontFamily: {
+              "display": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display">
+<div class="flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark">
+<div class="flex-grow">
+<header class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2">
+<button class="text-black dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full bg-background-light dark:bg-background-dark shadow-sm">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path>
+</svg>
+</button>
+<h1 class="text-lg font-bold flex-1 text-center pr-10 text-black dark:text-white">Progress</h1>
+</header>
+<main class="p-4 space-y-8">
+<section>
+<h2 class="text-2xl font-bold tracking-tight text-black dark:text-white mb-4">Weight &amp; Calorie Tracking</h2>
+<div class="flex flex-col gap-4 rounded-xl border border-primary/20 dark:border-primary/30 p-6 bg-background-light dark:bg-background-dark shadow-sm">
+<div class="flex items-start justify-between">
+<div>
+<p class="text-base font-medium text-black dark:text-white">Weight</p>
+<p class="text-3xl font-bold text-black dark:text-white">150 lbs</p>
+</div>
+<div class="flex items-center gap-1.5 rounded-full bg-green-100 dark:bg-green-900/50 px-3 py-1">
+<svg class="text-green-500 dark:text-green-400" fill="currentColor" height="16" viewBox="0 0 256 256" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L76.69,190.63a8,8,0,0,1-11.32-11.32L172.69,72H96a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
+<p class="text-sm font-medium text-green-600 dark:text-green-400">-2%</p>
+</div>
+</div>
+<p class="text-sm font-normal text-black/60 dark:text-white/60">Last 30 Days</p>
+<div class="flex min-h-[180px] flex-1 flex-col gap-8 py-4">
+<svg fill="none" height="148" preserveAspectRatio="none" viewBox="-3 0 478 150" width="100%" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25V149H326.769H0V109Z" fill="url(#paint0_linear_1131_5935)"></path>
+<path d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25" stroke="#137fec" stroke-linecap="round" stroke-width="3"></path>
+<defs>
+<linearGradient gradientUnits="userSpaceOnUse" id="paint0_linear_1131_5935" x1="236" x2="236" y1="1" y2="149">
+<stop stop-color="#137fec" stop-opacity="0.2"></stop>
+<stop offset="1" stop-color="#137fec" stop-opacity="0"></stop>
+</linearGradient>
+</defs>
+</svg>
+<div class="flex justify-around">
+<p class="text-xs font-bold uppercase tracking-wider text-black/60 dark:text-white/60">Week 1</p>
+<p class="text-xs font-bold uppercase tracking-wider text-black/60 dark:text-white/60">Week 2</p>
+<p class="text-xs font-bold uppercase tracking-wider text-black/60 dark:text-white/60">Week 3</p>
+<p class="text-xs font-bold uppercase tracking-wider text-black/60 dark:text-white/60">Week 4</p>
+</div>
+</div>
+</div>
+</section>
+<section>
+<h2 class="text-2xl font-bold tracking-tight text-black dark:text-white mb-4">Progress Comparison</h2>
+<div class="space-y-4">
+<div class="flex items-center gap-4 rounded-xl bg-background-light dark:bg-background-dark border border-primary/20 dark:border-primary/30 p-4 shadow-sm">
+<div class="flex-1">
+<p class="text-sm font-normal text-black/60 dark:text-white/60">Before</p>
+<p class="text-base font-bold text-black dark:text-white">Week 1</p>
+<p class="text-sm font-normal text-black/60 dark:text-white/60">Initial Assessment</p>
+</div>
+<div class="w-28 h-28 bg-center bg-no-repeat bg-cover rounded-lg flex-shrink-0" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDfSyPbN3X4sQbYDddeVYWKwf5V8wXiZAD1fHiKYDcCM1ObU5-CG3bvNBmNcJVEdseiiFg4kfm7EeRFFcVrEGv5RTGt0OUlTJU4siXn_3dSjIW62HOLMJ0M8g7-TK8uKkpgI-b06VXho6OPHf6niP8OrkGXy-eeziJas4VE_UYoexMJDBKOAtma70PQ5oZBcChJiTSYtdZ7iFaCrvrfaYHxOzUFzeGTrwZZHI9bSWPE6rUc_z3Ww2xHm016bfIvDGt0CpZIg2LBMmFC");'></div>
+</div>
+<div class="flex items-center gap-4 rounded-xl bg-background-light dark:bg-background-dark border border-primary/20 dark:border-primary/30 p-4 shadow-sm">
+<div class="flex-1">
+<p class="text-sm font-normal text-black/60 dark:text-white/60">After</p>
+<p class="text-base font-bold text-black dark:text-white">Week 4</p>
+<p class="text-sm font-normal text-black/60 dark:text-white/60">Current Progress</p>
+</div>
+<div class="w-28 h-28 bg-center bg-no-repeat bg-cover rounded-lg flex-shrink-0" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB7y2qr0V9qLKPeMNatlgwKwo7T1KrjB28dWnZ_wngVb71bOlb09NcvHo0JrvLsMEnXiIt5DnsmEHVtY_wm2s5_eKQ-MiZOzVtTmAyTn9Eby4aMZMz9_x3yc2zXPjiHZjidpxb-cP7xDQT7QuVKxVepWdS72Uw8bwqwCaVpI-9ZcMdbJosYuVg6WepXxUFquwlO27e6u_L_lAnJ1MwZDSuKNrZFzDGdd3C2SAIQMO_lmoMzZNWs1c25XeHtfeGqdDlCvLR625CXCKap");'></div>
+</div>
+</div>
+</section>
+<section>
+<h2 class="text-2xl font-bold tracking-tight text-black dark:text-white mb-4">Weekly Goals</h2>
+<div class="flex flex-col gap-3 p-6 rounded-xl border border-primary/20 dark:border-primary/30 bg-background-light dark:bg-background-dark shadow-sm">
+<div class="flex gap-6 justify-between items-center">
+<p class="text-base font-medium text-black dark:text-white">Weekly Goals Completion</p>
+<p class="text-sm font-medium text-black/60 dark:text-white/60">3/4</p>
+</div>
+<div class="w-full rounded-full bg-primary/20 dark:bg-primary/30 h-2.5">
+<div class="h-2.5 rounded-full bg-primary" style="width: 75%;"></div>
+</div>
+</div>
+</section>
+<section>
+<h2 class="text-2xl font-bold tracking-tight text-black dark:text-white mb-4">Achievements</h2>
+<div class="grid grid-cols-2 gap-4">
+<div class="flex flex-col gap-3">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCL79cAI7tXJd9jnZtzyC8Xh5Tqcarl1bkhyC6ceyC7MJFy1IOcYNSTxR-9BwQnczsBCfrZc-YV3xr_NRq7oZSk00DW-zX-gpwyUrPL_zsNAya9rSEXOsd-NPBI0uooNR1ks6jU4UsV6cBZbkZ0TwcKjm83st6cmsmE5NBCU9CI3iaxOwKZAnFo_l7UFq13fnWc3CnRKznRq3AyGT16_gn55NTcDfpd4Q4hRc_B5UJ60RKVnDVP7HhDzRoBNAo8iHornL__2JsReb5e");'></div>
+<div>
+<p class="text-base font-medium text-black dark:text-white">3-Day Streak</p>
+<p class="text-sm font-normal text-black/60 dark:text-white/60">3 consecutive days</p>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5ZD4rSJMBkdr5NB3tliKQ7KrdZmTi4P3pZc5hpbxyZLr1fmY--W-UEbNHL2L9hiEzRzTrhiD3F7bXpz_e9I7rGd-4yO_XjH_5ykuDwItBvGIGpNJCPHzJH-VzzmOU5JHi6WdyN_7fOsOMdqYKYavpFLi_kknmmSS2gLWY261TRvV1cz4ev7dzPHvCxqGP13OA58t2G7mU4CXu34WToF0XtzhEFybHy92dWAYlzZxuy-sg9L_0DRjDSiOKgR7F7lEsWEmpc6qLLmsA");'></div>
+<div>
+<p class="text-base font-medium text-black dark:text-white">Goal Setter</p>
+<p class="text-sm font-normal text-black/60 dark:text-white/60">Set your first goal</p>
+</div>
+</div>
+<div class="flex flex-col gap-3 col-span-2">
+<div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDFgjbuEs-C7Nj1kHiWIbvcIZsnqprAssnJphgOmHVeqg52REo1jWQRUn6_1sedQX7B3B0ccAnZ_x5_vdWF1d_lXQLwoHG1FBXewueXAoRrf5LfI6Ku-d2Kr-FtwvrxV7YsJv-4xtOgRNV8uH_mee77tm4s8sjX2CrVb_kt893qj3hb-8PpDL3SsOfdm-Em7MLgstlpVAhCYrMdRgMCDm3xmfhXwRcww3g0OPdU995p8Ib3vjp6rzr9tC6WwmL-uUw6OneieXpPOFMo");'></div>
+<div>
+<p class="text-base font-medium text-black dark:text-white">First Workout</p>
+<p class="text-sm font-normal text-black/60 dark:text-white/60">Completed your first session</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<footer class="sticky bottom-0 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm border-t border-primary/20 dark:border-primary/30">
+<nav class="flex justify-around items-center h-20">
+<a class="flex flex-col items-center justify-center gap-1 text-black/60 dark:text-white/60" href="#">
+<svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg">
+<path d="M218.83,103.77l-80-75.48a1.14,1.14,0,0,1-.11-.11,16,16,0,0,0-21.53,0l-.11.11L37.17,103.77A16,16,0,0,0,32,115.55V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V160h32v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V115.55A16,16,0,0,0,218.83,103.77ZM208,208H160V160a16,16,0,0,0-16-16H112a16,16,0,0,0-16,16v48H48V115.55l.11-.1L128,40l79.9,75.43.11.1Z"></path>
+</svg>
+<p class="text-xs font-medium">Dashboard</p>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 text-black/60 dark:text-white/60" href="#">
+<svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg">
+<path d="M140,128a12,12,0,1,1-12-12A12,12,0,0,1,140,128ZM84,116a12,12,0,1,0,12,12A12,12,0,0,0,84,116Zm88,0a12,12,0,1,0,12,12A12,12,0,0,0,172,116Zm60,12A104,104,0,0,1,79.12,219.82L45.07,231.17a16,16,0,0,1-20.24-20.24l11.35-34.05A104,104,0,1,1,232,128Zm-16,0A88,88,0,1,0,51.81,172.06a8,8,0,0,1,.66,6.54L40,216,77.4,203.53a7.85,7.85,0,0,1,2.53-.42,8,8,0,0,1,4,1.08A88,88,0,0,0,216,128Z"></path>
+</svg>
+<p class="text-xs font-medium">Chat</p>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 text-primary dark:text-primary" href="#">
+<div class="relative">
+<div class="absolute -inset-2 bg-primary/20 rounded-full"></div>
+<svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg">
+<path d="M216,40H136V24a8,8,0,0,0-16,0V40H40A16,16,0,0,0,24,56V176a16,16,0,0,0,16,16H79.36L57.75,219a8,8,0,0,0,12.5,10l29.59-37h56.32l29.59,37a8,8,0,1,0,12.5-10l-21.61-27H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40ZM104,144a8,8,0,0,1-16,0V120a8,8,0,0,1,16,0Zm32,0a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm32,0a8,8,0,0,1-16,0V88a8,8,0,0,1,16,0Z"></path>
+</svg>
+</div>
+<p class="text-xs font-medium">Progress</p>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 text-black/60 dark:text-white/60" href="#">
+<svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg">
+<path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z"></path>
+</svg>
+<p class="text-xs font-medium">Settings</p>
+</a>
+</nav>
+</footer>
+</div>
+
+</body></html>
