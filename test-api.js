@@ -3,7 +3,7 @@
 
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const apiKey = 'AIzaSyAGvt6ak1UqioahAl8ciRcLAChQDdA41_0';
+const apiKey = 'your_new_api_key_here';
 
 async function testGeminiAPI() {
   console.log('🔑 Testing Gemini API with SDK...');

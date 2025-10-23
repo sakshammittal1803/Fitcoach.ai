@@ -1,9 +1,8 @@
-// src/components/Chat.js
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import Navigation from './Navigation';
 import { APP_CONFIG } from './config';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Inject animations
 const style = document.createElement('style');
@@ -37,6 +36,7 @@ const Chat = () => {
   const [isListening, setIsListening] = useState(false);
   const [interimTranscript, setInterimTranscript] = useState('');
   const [userGender, setUserGender] = useState('male');
+  const [isApiReady, setIsApiReady] = useState(false);
   const [genAI, setGenAI] = useState(null);
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
@@ -49,24 +49,15 @@ const Chat = () => {
     scrollToBottom();
   }, [messages, isAiTyping]);
 
-  // Initialize Gemini
+  // Initialize API
   useEffect(() => {
-    const apiKey = process.env.REACT_APP_GEMINI_API_KEY?.trim();
-    console.log('🔑 Checking API Key...');
-    console.log('API Key exists:', !!apiKey);
-    console.log('API Key length:', apiKey?.length);
-    console.log('API Key prefix:', apiKey?.substring(0, 10) + '...');
-    
-    if (!apiKey || apiKey.length < 20 || apiKey.includes('your_')) {
-      console.warn('❌ Gemini API key not configured properly');
-      return;
-    }
-    try {
-      console.log('✅ Initializing Gemini AI...');
-      setGenAI(new GoogleGenerativeAI(apiKey));
-      console.log('✅ Gemini AI initialized successfully!');
-    } catch (err) {
-      console.error('❌ Gemini init failed:', err);
+    const apiKey = process.env.REACT_APP_GEMINI_API_KEY;
+    if (apiKey) {
+      const ai = new GoogleGenerativeAI(apiKey);
+      setGenAI(ai);
+      setIsApiReady(true);
+    } else {
+      setIsApiReady(false);
     }
   }, []);
 
@@ -77,12 +68,12 @@ const Chat = () => {
     setUserGender(profile.gender || 'male');
 
     if (!localStorage.getItem('chatInitialized')) {
-      const welcome = genAI ? buildWelcomeMessage(profile, name) : buildApiKeyMessage();
+      const welcome = isApiReady ? buildWelcomeMessage(profile, name) : buildApiKeyMessage();
       setMessages([welcome]);
       localStorage.setItem('chatInitialized', 'true');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [genAI]);
+  }, [isApiReady]);
 
   const buildApiKeyMessage = () => ({
     id: Date.now(),
@@ -126,37 +117,41 @@ const Chat = () => {
   };
 
   const generateAIResponse = async (userText, files) => {
-    if (!genAI) return;
+    if (!isApiReady || !genAI) return;
     setIsAiTyping(true);
 
     const profile = JSON.parse(localStorage.getItem('userProfile') || '{}');
     const hasImage = files.some(f => f.isImage);
 
     try {
-      const model = genAI.getGenerativeModel({ model: aiModel });
+        const model = genAI.getGenerativeModel({ model: aiModel });
+        const systemInstruction = `You are ${aiName}, a friendly, expert personal trainer. Client: ${profile.name || 'User'}, Goal: ${profile.fitnessTrack || 'General fitness'}, Stats: ${profile.height || '?'}cm, ${profile.weight || '?'}kg. Respond conversationally, under 250 words, use emojis naturally.`;
+        
+        const userMessageParts = [{ text: userText }];
+        if (hasImage) {
+            userMessageParts.push({text: 'They uploaded a photo – give specific, encouraging feedback!'})
+            files.forEach(file => {
+                if(file.isImage) {
+                    userMessageParts.push({
+                        inlineData: {
+                            mimeType: file.type,
+                            data: file.base64
+                        }
+                    });
+                }
+            })
+        }
 
-      const prompt = `You are ${aiName}, a friendly, expert personal trainer.
-Client: ${profile.name || 'User'}
-Goal: ${profile.fitnessTrack || 'General fitness'}
-Stats: ${profile.height || '?'}cm, ${profile.weight || '?'}kg
+        const result = await model.generateContent({
+            contents: [{ role: "user", parts: userMessageParts }],
+            systemInstruction: systemInstruction
+        });
 
-Message: "${userText}"
-
-${hasImage ? 'They uploaded a photo – give specific, encouraging feedback!' : ''}
-
-Respond conversationally, under 250 words, use emojis naturally.`;
-
-      const result = await model.generateContent([
-        prompt,
-        ...files.filter(f => f.isImage).map(f => ({
-          inlineData: { data: f.base64, mimeType: f.type }
-        }))
-      ]);
-
-      let response = result.response.text();
+      const response = await result.response;
+      let text = response.text();
 
       if (hasImage) {
-        response += `\n\n+${pointsPerPhoto} points for progress photo!`;
+        text += `\n\n+${pointsPerPhoto} points for progress photo!`;
         const points = (parseInt(localStorage.getItem('userPoints') || '0') + pointsPerPhoto).toString();
         localStorage.setItem('userPoints', points);
       }
@@ -164,32 +159,18 @@ Respond conversationally, under 250 words, use emojis naturally.`;
       setMessages(prev => [...prev, {
         id: Date.now() + 1,
         sender: 'ai',
-        text: response,
+        text,
         avatar: avatars.ai,
         timestamp: new Date().toISOString()
       }]);
     } catch (error) {
-      console.error('Gemini API Error:', error);
-      console.error('Error details:', {
-        message: error.message,
-        name: error.name,
-        stack: error.stack
-      });
-      
-      let errorMessage = '**AI Error**\n\n';
-      
-      if (error.message.includes('API_KEY_INVALID') || error.message.includes('API key')) {
-        errorMessage += '❌ Invalid API key. Please check your key at:\nhttps://aistudio.google.com/app/apikey';
-      } else if (error.message.includes('quota') || error.message.includes('429')) {
-        errorMessage += '❌ Daily API limit reached. Try again tomorrow or upgrade your quota.';
-      } else if (error.message.includes('fetch') || error.message.includes('network') || error.message.includes('Failed to fetch')) {
-        errorMessage += '❌ Network error. Check your internet connection.\n\nTry:\n• Refreshing the page\n• Checking your firewall\n• Using a VPN if blocked';
-      } else if (error.message.includes('CORS')) {
-        errorMessage += '❌ CORS error. This is a browser security issue.\n\nThe API key works, but browser is blocking the request.';
-      } else {
-        errorMessage += `❌ Connection failed.\n\nError: ${error.message}\n\nPlease check:\n• Internet connection\n• API key is valid\n• No firewall blocking requests`;
-      }
-      
+      console.error('API Error:', error);
+       let errorMessage = '**AI Error**\n\n❌ Failed to connect to the AI. Please try again later.';
+        if (error.toString().includes('NetworkError')) {
+             errorMessage = '**Network Error**\n\nCould not connect to the AI service. This might be a CORS issue. If this persists, a server-side proxy might be needed.';
+        } else if (error.toString().includes('API key not valid')) {
+            errorMessage = '**API Key Error**\n\nYour Gemini API key is not valid. Please check your `.env` file and make sure it is correct.';
+        }
       setMessages(prev => [...prev, {
         id: Date.now() + 1,
         sender: 'system',
@@ -291,11 +272,11 @@ Respond conversationally, under 250 words, use emojis naturally.`;
                 {aiName}
               </span>
             </h1>
-            <span className={`text-xs px-3 py-1 rounded-full font-medium ${genAI ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-              {genAI ? configMessages.onlineStatus : configMessages.offlineStatus}
+            <span className={`text-xs px-3 py-1 rounded-full font-medium ${isApiReady ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+              {isApiReady ? configMessages.onlineStatus : configMessages.offlineStatus}
             </span>
           </div>
-          {!genAI && (
+          {!isApiReady && (
             <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm">
               <a href={links.apiKey} target="_blank" rel="noopener noreferrer" className="underline text-blue-600">
                 Get free API key →
@@ -363,19 +344,19 @@ Respond conversationally, under 250 words, use emojis naturally.`;
                 value={message + interimTranscript}
                 onChange={(e) => setMessage(e.target.value.replace(interimTranscript, ''))}
                 onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSend())}
-                placeholder={genAI ? "Ask about fitness, diet, form..." : "API key required"}
-                disabled={!genAI}
+                placeholder={isApiReady ? "Ask about fitness, diet, form..." : "API key required"}
+                disabled={!isApiReady}
                 className="flex-1 px-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
               />
 
               <label className="cursor-pointer p-2.5 border rounded-xl hover:bg-gray-100 disabled:opacity-50">
-                <input type="file" multiple accept="image/*" onChange={handleFileUpload} disabled={!genAI} className="hidden" />
+                <input type="file" multiple accept="image/*" onChange={handleFileUpload} disabled={!isApiReady} className="hidden" />
                 📎
               </label>
 
               <button
-                onClick={genAI ? (isListening ? stopListening : startListening) : undefined}
-                disabled={!genAI}
+                onClick={isApiReady ? (isListening ? stopListening : startListening) : undefined}
+                disabled={!isApiReady}
                 className={`p-2.5 border rounded-xl ${isListening ? 'bg-red-500 text-white' : 'hover:bg-gray-100'} disabled:opacity-50`}
               >
                 🎤
@@ -383,7 +364,7 @@ Respond conversationally, under 250 words, use emojis naturally.`;
 
               <button
                 onClick={handleSend}
-                disabled={!genAI || (!message.trim() && attachedFiles.length === 0)}
+                disabled={!isApiReady || (!message.trim() && attachedFiles.length === 0)}
                 className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-medium hover:shadow-md disabled:opacity-50"
               >
                 Send

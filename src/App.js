@@ -11,7 +11,6 @@ import Progress from './components/Progress';
 import Rewards from './components/Rewards';
 import Settings from './components/Settings';
 import ProfileEdit from './components/ProfileEdit';
-import GoogleAuthTest from './components/GoogleAuthTest';
 
 function App() {
   return (
@@ -28,7 +27,6 @@ function App() {
               <Route path="/rewards" element={<Rewards />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/profile-edit" element={<ProfileEdit />} />
-              <Route path="/test-google" element={<GoogleAuthTest />} />
             </Routes>
           </div>
         </AuthProvider>
