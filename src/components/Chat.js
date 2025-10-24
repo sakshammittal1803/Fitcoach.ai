@@ -18,20 +18,22 @@ document.head.appendChild(style);
 const {
   appName,
   aiName,
+  pointsPerPhoto,
   welcomeTimeout,
   avatars,
   messages: configMessages,
 } = APP_CONFIG;
 
-// --- OpenRouter/Cyberlife Integration --- 
-const API_KEY = "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"; // From your example
-const OPENROUTER_MODEL = "meta-llama/llama-3-8b-instruct";
+// --- OpenRouter Integration --- 
+const API_KEY = "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";
+const OPENROUTER_MODEL = "meta-llama/llama-4-maverick:free"; // Using the specified multimodal model
 const SITE_URL = window.location.origin;
 const SITE_NAME = "FitCoach AI";
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [attachedFiles, setAttachedFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [userGender, setUserGender] = useState('male');
@@ -88,10 +90,11 @@ const Chat = () => {
     };
   };
 
-  const generateAIResponse = async (history) => {
+  const generateAIResponse = async (history, files) => {
     setLoading(true);
     setError(null);
 
+    const hasImage = files.length > 0;
     const profile = JSON.parse(localStorage.getItem('userProfile') || '{}');
     const SYSTEM_PROMPT = `You are ${aiName}, a friendly, expert personal trainer for the app ${appName}.
 Your client is ${profile.name || 'User'}.
@@ -100,9 +103,25 @@ Their stats are: ${profile.height || '?'}cm, ${profile.weight || '?'}kg.
 
 Your job is to:
 - Provide encouraging and helpful advice on fitness, diet, and health.
+- If an image is provided, analyze it carefully and give specific feedback (e.g., on meal contents, workout form).
 - Keep responses conversational, concise (under 200 words), and use emojis naturally.
 - Never say you are just a bot or AI model. You are their personal trainer, Coach.
 - Use markdown for formatting if needed.`;
+    
+    // Construct the user message with text and images per OpenRouter spec
+    const lastUserMessage = history[history.length - 1];
+    const userMessageContent = [{ type: "text", text: lastUserMessage.content }];
+    if (hasImage) {
+        files.forEach(file => {
+            userMessageContent.push({
+                type: "image_url",
+                image_url: { url: `data:${file.type};base64,${file.base64}` }
+            });
+        });
+    }
+
+    const requestMessages = history.slice(0, -1).map(m => ({ role: m.role, content: m.content }));
+    requestMessages.push({ role: 'user', content: userMessageContent });
 
     try {
       const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -117,7 +136,7 @@ Your job is to:
           model: OPENROUTER_MODEL,
           messages: [
             { role: "system", content: SYSTEM_PROMPT },
-            ...history.map((m) => ({ role: m.role, content: m.content })),
+            ...requestMessages,
           ],
         }),
       });
@@ -128,8 +147,14 @@ Your job is to:
       }
 
       const data = await res.json();
-      const reply = data.choices?.[0]?.message?.content || "(No response)";
+      let reply = data.choices?.[0]?.message?.content || "(No response)";
       
+      if (hasImage) {
+        reply += `\n\n+${pointsPerPhoto} points for progress photo!`;
+        const points = (parseInt(localStorage.getItem('userPoints') || '0') + pointsPerPhoto).toString();
+        localStorage.setItem('userPoints', points);
+      }
+
       setMessages((msgs) => [...msgs, { 
         id: Date.now(), 
         role: "assistant", 
@@ -153,23 +178,45 @@ Your job is to:
   };
 
   const handleSend = () => {
-    if (!input.trim()) return;
+    if (!input.trim() && attachedFiles.length === 0) return;
 
     const userMsg = {
       id: Date.now(),
       role: 'user',
-      content: input,
+      content: input || 'Sent an image',
       avatar: userGender === 'female' ? avatars.female : avatars.male,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      files: [...attachedFiles] // show preview in user message
     };
     
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
     const newHistory = newMessages.filter(m => m.role === 'user' || m.role === 'assistant');
+    const filesToSend = [...attachedFiles];
     setInput('');
+    setAttachedFiles([]);
 
-    setTimeout(() => generateAIResponse(newHistory), 500);
+    setTimeout(() => generateAIResponse(newHistory, filesToSend), 500);
   };
+
+  const handleFileUpload = (e) => {
+    Array.from(e.target.files).forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAttachedFiles(prev => [...prev, {
+          id: Date.now() + Math.random(),
+          name: file.name,
+          type: file.type,
+          isImage: file.type.startsWith('image/'),
+          url: URL.createObjectURL(file),
+          base64: reader.result.split(',')[1]
+        }]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeFile = (id) => setAttachedFiles(prev => prev.filter(f => f.id !== id));
   
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -210,6 +257,11 @@ Your job is to:
                    <div className="text-sm whitespace-pre-wrap" dangerouslySetInnerHTML={{
                     __html: msg.content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                   }} />
+                   {msg.files?.map(f => (
+                    <div key={f.id} className="mt-2">
+                      <img src={f.url} alt="" className="max-w-full h-32 object-cover rounded-lg" />
+                    </div>
+                  ))}
                   <div className="text-xs opacity-70 mt-1">
                     {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
@@ -230,20 +282,35 @@ Your job is to:
           </div>
 
           <div className="border-t bg-gray-50 p-4">
-             {error && <div className="text-red-500 text-xs pb-2">{error}</div>}
+            {attachedFiles.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-3">
+                    {attachedFiles.map(f => (
+                    <div key={f.id} className="flex items-center gap-2 bg-white border rounded-lg px-3 py-1 text-sm">
+                        <img src={f.url} alt="" className="w-8 h-8 object-cover rounded" />
+                        <span className="truncate max-w-32">{f.name}</span>
+                        <button onClick={() => removeFile(f.id)} className="text-red-500">×</button>
+                    </div>
+                    ))}
+                </div>
+            )}
+            {error && <div className="text-red-500 text-xs pb-2">{error}</div>}
             <div className="flex gap-2 items-end">
               <textarea
                 rows="1"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask about fitness, diet, form..."
+                placeholder="Ask about fitness, or attach a photo..."
                 disabled={loading}
                 className="flex-1 resize-none px-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
               />
+               <label className="cursor-pointer p-2.5 border rounded-xl hover:bg-gray-100 disabled:opacity-50">
+                <input type="file" multiple accept="image/*" onChange={handleFileUpload} disabled={loading} className="hidden" />
+                📎
+              </label>
               <button
                 onClick={handleSend}
-                disabled={loading || !input.trim()}
+                disabled={loading || (!input.trim() && attachedFiles.length === 0)}
                 className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-medium hover:shadow-md disabled:opacity-50"
               >
                 Send
