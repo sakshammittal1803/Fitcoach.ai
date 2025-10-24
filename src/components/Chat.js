@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Navigation from './Navigation';
 import { APP_CONFIG } from './config';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Inject animations
 const style = document.createElement('style');
@@ -20,70 +18,44 @@ document.head.appendChild(style);
 const {
   appName,
   aiName,
-  aiModel,
-  pointsPerPhoto,
   welcomeTimeout,
   avatars,
   messages: configMessages,
-  links
 } = APP_CONFIG;
 
+// --- OpenRouter/Cyberlife Integration --- 
+const API_KEY = "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"; // From your example
+const OPENROUTER_MODEL = "meta-llama/llama-3-8b-instruct";
+const SITE_URL = window.location.origin;
+const SITE_NAME = "FitCoach AI";
+
 const Chat = () => {
-  const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
-  const [attachedFiles, setAttachedFiles] = useState([]);
-  const [isAiTyping, setIsAiTyping] = useState(false);
-  const [isListening, setIsListening] = useState(false);
-  const [interimTranscript, setInterimTranscript] = useState('');
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [userGender, setUserGender] = useState('male');
-  const [isApiReady, setIsApiReady] = useState(false);
-  const [genAI, setGenAI] = useState(null);
   const messagesEndRef = useRef(null);
-  const recognitionRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, isAiTyping]);
+  useEffect(scrollToBottom, [messages, loading]);
 
-  // Initialize API
-  useEffect(() => {
-    const apiKey = process.env.REACT_APP_GEMINI_API_KEY;
-    if (apiKey) {
-      const ai = new GoogleGenerativeAI(apiKey);
-      setGenAI(ai);
-      setIsApiReady(true);
-    } else {
-      setIsApiReady(false);
-    }
-  }, []);
-
-  // Load user & show welcome
+  // Load user info and show initial welcome message
   useEffect(() => {
     const name = localStorage.getItem('userName') || 'there';
     const profile = JSON.parse(localStorage.getItem('userProfile') || '{}');
     setUserGender(profile.gender || 'male');
 
-    if (!localStorage.getItem('chatInitialized')) {
-      const welcome = isApiReady ? buildWelcomeMessage(profile, name) : buildApiKeyMessage();
-      setMessages([welcome]);
-      localStorage.setItem('chatInitialized', 'true');
+    if (messages.length === 0) {
+        setMessages([buildWelcomeMessage(profile, name)]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isApiReady]);
+  }, []);
 
-  const buildApiKeyMessage = () => ({
-    id: Date.now(),
-    sender: 'system',
-    text: configMessages.apiKeyMissing.replace('{{aiName}}', aiName),
-    avatar: avatars.ai,
-    timestamp: new Date().toISOString()
-  });
-
-  const buildWelcomeMessage = (profile, name) => {
+   const buildWelcomeMessage = (profile, name) => {
     let text = configMessages.welcome
       .replace('{{name}}', name)
       .replace('{{aiName}}', aiName);
@@ -109,157 +81,102 @@ const Chat = () => {
 
     return {
       id: Date.now(),
-      sender: 'ai',
-      text,
+      role: 'assistant',
+      content: text,
       avatar: avatars.ai,
       timestamp: new Date().toISOString()
     };
   };
 
-  const generateAIResponse = async (userText, files) => {
-    if (!isApiReady || !genAI) return;
-    setIsAiTyping(true);
+  const generateAIResponse = async (history) => {
+    setLoading(true);
+    setError(null);
 
     const profile = JSON.parse(localStorage.getItem('userProfile') || '{}');
-    const hasImage = files.some(f => f.isImage);
+    const SYSTEM_PROMPT = `You are ${aiName}, a friendly, expert personal trainer for the app ${appName}.
+Your client is ${profile.name || 'User'}.
+Their goal is: ${profile.fitnessTrack || 'General fitness'}.
+Their stats are: ${profile.height || '?'}cm, ${profile.weight || '?'}kg.
+
+Your job is to:
+- Provide encouraging and helpful advice on fitness, diet, and health.
+- Keep responses conversational, concise (under 200 words), and use emojis naturally.
+- Never say you are just a bot or AI model. You are their personal trainer, Coach.
+- Use markdown for formatting if needed.`;
 
     try {
-        const model = genAI.getGenerativeModel({ model: aiModel });
-        const systemInstruction = `You are ${aiName}, a friendly, expert personal trainer. Client: ${profile.name || 'User'}, Goal: ${profile.fitnessTrack || 'General fitness'}, Stats: ${profile.height || '?'}cm, ${profile.weight || '?'}kg. Respond conversationally, under 250 words, use emojis naturally.`;
-        
-        const userMessageParts = [{ text: userText }];
-        if (hasImage) {
-            userMessageParts.push({text: 'They uploaded a photo – give specific, encouraging feedback!'})
-            files.forEach(file => {
-                if(file.isImage) {
-                    userMessageParts.push({
-                        inlineData: {
-                            mimeType: file.type,
-                            data: file.base64
-                        }
-                    });
-                }
-            })
-        }
+      const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${API_KEY}`,
+          "HTTP-Referer": SITE_URL,
+          "X-Title": SITE_NAME,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: OPENROUTER_MODEL,
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            ...history.map((m) => ({ role: m.role, content: m.content })),
+          ],
+        }),
+      });
 
-        const result = await model.generateContent({
-            contents: [{ role: "user", parts: userMessageParts }],
-            systemInstruction: systemInstruction
-        });
-
-      const response = await result.response;
-      let text = response.text();
-
-      if (hasImage) {
-        text += `\n\n+${pointsPerPhoto} points for progress photo!`;
-        const points = (parseInt(localStorage.getItem('userPoints') || '0') + pointsPerPhoto).toString();
-        localStorage.setItem('userPoints', points);
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error?.message || "API error");
       }
 
-      setMessages(prev => [...prev, {
-        id: Date.now() + 1,
-        sender: 'ai',
-        text,
+      const data = await res.json();
+      const reply = data.choices?.[0]?.message?.content || "(No response)";
+      
+      setMessages((msgs) => [...msgs, { 
+        id: Date.now(), 
+        role: "assistant", 
+        content: reply, 
         avatar: avatars.ai,
         timestamp: new Date().toISOString()
       }]);
-    } catch (error) {
-      console.error('API Error:', error);
-       let errorMessage = '**AI Error**\n\n❌ Failed to connect to the AI. Please try again later.';
-        if (error.toString().includes('NetworkError')) {
-             errorMessage = '**Network Error**\n\nCould not connect to the AI service. This might be a CORS issue. If this persists, a server-side proxy might be needed.';
-        } else if (error.toString().includes('API key not valid')) {
-            errorMessage = '**API Key Error**\n\nYour Gemini API key is not valid. Please check your `.env` file and make sure it is correct.';
-        }
-      setMessages(prev => [...prev, {
-        id: Date.now() + 1,
-        sender: 'system',
-        text: errorMessage,
+
+    } catch (err) {
+      setError(`Failed to get response: ${err.message}`);
+      setMessages((msgs) => [...msgs, { 
+        id: Date.now(), 
+        role: "system", 
+        content: `**AI Error**\n\n❌ ${err.message}`,
         avatar: avatars.ai,
         timestamp: new Date().toISOString()
-      }]);
+       }]);
     } finally {
-      setIsAiTyping(false);
+      setLoading(false);
     }
   };
 
-  const handleSend = async () => {
-    if (!message.trim() && attachedFiles.length === 0) return;
+  const handleSend = () => {
+    if (!input.trim()) return;
 
     const userMsg = {
       id: Date.now(),
-      sender: 'user',
-      text: message || 'Sent files',
+      role: 'user',
+      content: input,
       avatar: userGender === 'female' ? avatars.female : avatars.male,
-      timestamp: new Date().toISOString(),
-      files: [...attachedFiles]
+      timestamp: new Date().toISOString()
     };
+    
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
+    const newHistory = newMessages.filter(m => m.role === 'user' || m.role === 'assistant');
+    setInput('');
 
-    setMessages(prev => [...prev, userMsg]);
-    const text = message;
-    const files = [...attachedFiles];
-    setMessage('');
-    setAttachedFiles([]);
-    setInterimTranscript('');
-
-    setTimeout(() => generateAIResponse(text, files), welcomeTimeout);
+    setTimeout(() => generateAIResponse(newHistory), 500);
   };
-
-  const handleFileUpload = (e) => {
-    Array.from(e.target.files).forEach(file => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAttachedFiles(prev => [...prev, {
-          id: Date.now() + Math.random(),
-          name: file.name,
-          type: file.type,
-          isImage: file.type.startsWith('image/'),
-          url: URL.createObjectURL(file),
-          base64: reader.result.split(',')[1]
-        }]);
-      };
-      reader.readAsDataURL(file);
-    });
+  
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
   };
-
-  const removeFile = (id) => setAttachedFiles(prev => prev.filter(f => f.id !== id));
-
-  // Speech Recognition
-  const startListening = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return alert('Speech not supported');
-
-    const recognition = new SpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = 'en-US';
-
-    recognition.onresult = (e) => {
-      let final = '', interim = '';
-      for (let i = e.resultIndex; i < e.results.length; i++) {
-        const t = e.results[i][0].transcript;
-        e.results[i].isFinal ? final += t + ' ' : interim += t;
-      }
-      if (final) setMessage(prev => prev + final);
-      setInterimTranscript(interim);
-    };
-
-    recognition.onerror = recognition.onend = () => setIsListening(false);
-    recognitionRef.current = recognition;
-    recognition.start();
-    setIsListening(true);
-  };
-
-  const stopListening = () => {
-    recognitionRef.current?.stop();
-    setIsListening(false);
-    setInterimTranscript('');
-  };
-
-  useEffect(() => {
-    if (isListening && message) stopListening();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [message]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pb-20">
@@ -272,49 +189,36 @@ const Chat = () => {
                 {aiName}
               </span>
             </h1>
-            <span className={`text-xs px-3 py-1 rounded-full font-medium ${isApiReady ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-              {isApiReady ? configMessages.onlineStatus : configMessages.offlineStatus}
+            <span className={`text-xs px-3 py-1 rounded-full font-medium ${API_KEY.includes('sk-or-v1') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                {API_KEY.includes('sk-or-v1') ? configMessages.onlineStatus : configMessages.offlineStatus}
             </span>
           </div>
-          {!isApiReady && (
-            <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm">
-              <a href={links.apiKey} target="_blank" rel="noopener noreferrer" className="underline text-blue-600">
-                Get free API key →
-              </a>
-            </div>
-          )}
         </div>
 
         <div className="bg-white rounded-xl shadow-lg overflow-hidden border">
           <div className="h-96 overflow-y-auto p-4 space-y-4">
             {messages.map(msg => (
-              <div key={msg.id} className={`flex gap-3 msg-in ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                {msg.sender !== 'user' && <img src={msg.avatar} alt="" className="w-9 h-9 rounded-full" />}
+              <div key={msg.id} className={`flex gap-3 msg-in ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                {msg.role !== 'user' && <img src={msg.avatar} alt="" className="w-9 h-9 rounded-full" />}
                 <div className={`max-w-xs md:max-w-md px-4 py-3 rounded-2xl shadow-sm ${
-                  msg.sender === 'user'
+                  msg.role === 'user'
                     ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white'
-                    : msg.sender === 'system'
+                    : msg.role === 'system'
                     ? 'bg-red-50 text-red-800 border border-red-200'
                     : 'bg-gray-100 text-gray-800'
                 }`}>
-                  <div className="text-sm whitespace-pre-wrap" dangerouslySetInnerHTML={{
-                    __html: msg.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                   <div className="text-sm whitespace-pre-wrap" dangerouslySetInnerHTML={{
+                    __html: msg.content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                   }} />
-                  {msg.files?.map(f => (
-                    <div key={f.id} className="mt-2">
-                      {f.isImage ? <img src={f.url} alt="" className="max-w-full h-32 object-cover rounded-lg" /> : 
-                       <div className="text-xs bg-white/30 px-2 py-1 rounded">File: {f.name}</div>}
-                    </div>
-                  ))}
                   <div className="text-xs opacity-70 mt-1">
                     {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
                 </div>
-                {msg.sender === 'user' && <img src={msg.avatar} alt="" className="w-9 h-9 rounded-full" />}
+                {msg.role === 'user' && <img src={msg.avatar} alt="" className="w-9 h-9 rounded-full" />}
               </div>
             ))}
 
-            {isAiTyping && (
+            {loading && (
               <div className="flex gap-3">
                 <img src={avatars.ai} alt="" className="w-9 h-9 rounded-full" />
                 <div className="bg-gray-100 px-4 py-3 rounded-2xl typing">
@@ -326,54 +230,25 @@ const Chat = () => {
           </div>
 
           <div className="border-t bg-gray-50 p-4">
-            {attachedFiles.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-3">
-                {attachedFiles.map(f => (
-                  <div key={f.id} className="flex items-center gap-2 bg-white border rounded-lg px-3 py-1 text-sm">
-                    {f.isImage ? <img src={f.url} alt="" className="w-8 h-8 object-cover rounded" /> : 'File'}
-                    <span className="truncate max-w-32">{f.name}</span>
-                    <button onClick={() => removeFile(f.id)} className="text-red-500">×</button>
-                  </div>
-                ))}
-              </div>
-            )}
-
+             {error && <div className="text-red-500 text-xs pb-2">{error}</div>}
             <div className="flex gap-2 items-end">
-              <input
-                type="text"
-                value={message + interimTranscript}
-                onChange={(e) => setMessage(e.target.value.replace(interimTranscript, ''))}
-                onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSend())}
-                placeholder={isApiReady ? "Ask about fitness, diet, form..." : "API key required"}
-                disabled={!isApiReady}
-                className="flex-1 px-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+              <textarea
+                rows="1"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Ask about fitness, diet, form..."
+                disabled={loading}
+                className="flex-1 resize-none px-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
               />
-
-              <label className="cursor-pointer p-2.5 border rounded-xl hover:bg-gray-100 disabled:opacity-50">
-                <input type="file" multiple accept="image/*" onChange={handleFileUpload} disabled={!isApiReady} className="hidden" />
-                📎
-              </label>
-
-              <button
-                onClick={isApiReady ? (isListening ? stopListening : startListening) : undefined}
-                disabled={!isApiReady}
-                className={`p-2.5 border rounded-xl ${isListening ? 'bg-red-500 text-white' : 'hover:bg-gray-100'} disabled:opacity-50`}
-              >
-                🎤
-              </button>
-
               <button
                 onClick={handleSend}
-                disabled={!isApiReady || (!message.trim() && attachedFiles.length === 0)}
+                disabled={loading || !input.trim()}
                 className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-medium hover:shadow-md disabled:opacity-50"
               >
                 Send
               </button>
             </div>
-
-            {interimTranscript && (
-              <p className="text-xs text-gray-500 mt-2 animate-pulse">Listening: {interimTranscript}</p>
-            )}
           </div>
         </div>
       </div>
